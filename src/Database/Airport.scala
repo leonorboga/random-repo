@@ -1,0 +1,53 @@
+package Database
+
+import java.io.File
+
+import au.com.bytecode.opencsv.CSVParser
+import org.apache.spark.rdd.RDD
+import Utilities.readFile
+
+/**
+  * Query the Airports' database
+  */
+
+object Airport {
+
+  var file:RDD[String] = null
+  val airportIDColumn = 0
+  val airportTypeColumn = 2
+  val airportNameColumn = 3
+  val isoCountryColumn = 8
+  val airportMunicipalityColumn = 10
+
+  def getAirportsFromCountryCode(countryCode: String): RDD[Array[String]] = {
+
+    val airports = getAirportsFile
+
+    airports.mapPartitions(lines => {
+      val parser = new CSVParser(',')
+      lines.filter(line => {
+        val columns = parser.parseLine(line)
+        Array(columns(isoCountryColumn)).mkString("").contentEquals(countryCode)
+      }).map(line => {
+        val columns = parser.parseLine(line)
+        Array(columns(airportIDColumn),
+          columns(airportTypeColumn),
+          columns(airportNameColumn),
+          columns(airportMunicipalityColumn))
+      })
+    })
+  }
+
+  private def getAirportsFile: RDD[String] ={
+    if(file == null)
+    {
+      file = loadAirportsFile()
+    }
+    file
+  }
+
+  private def loadAirportsFile(): RDD[String] ={
+    val currentDir = new File(".").getAbsolutePath
+    readFile(currentDir + "/resources/airports.csv")
+  }
+}
