@@ -74,25 +74,4 @@ object Report {
     val tupleWithCountry = list.filter(x => x._1.equals(airportCode)).head
     tupleWithCountry._2
   }
-
-
-  private def getListOfAirports(countryCode: String): String = {
-    val queryOutput:StringBuilder = new StringBuilder()
-
-    val listOfAirports = Airport.getAirportsFromCountryCode(countryCode)
-
-    listOfAirports.collect().foreach(airport => {
-      queryOutput.append(" | ")
-      queryOutput.append(airport(1)).append(" ")
-      queryOutput.append(airport(2)).append(" ")
-      queryOutput.append(airport(3)).append(" ")
-      queryOutput.append(" runways: ")
-
-      val runways = Runway.getRunwaysFromAirportCode(airport(0))
-      runways.collect().foreach(runway => queryOutput.append(" r: ").append(runway.mkString(" ")))
-    })
-
-    queryOutput.toString()
-  }
-
 }
