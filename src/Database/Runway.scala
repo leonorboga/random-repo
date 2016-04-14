@@ -15,12 +15,13 @@ object Runway {
   val lengthFtColumn = 3
   val widthFtColumn = 4
   val surfaceColumn = 5
+  val latitudeColumn = 8
 
   def getRunwaysFromAirportCode(airportCode: String): RDD[Array[String]] = {
 
-    val airports = getRunwaysFile
+    val runways = getRunwaysFile
 
-    airports.mapPartitions(lines => {
+    runways.mapPartitions(lines => {
       val parser = new CSVParser(',')
       lines.filter(line => {
         val columns = parser.parseLine(line)
@@ -33,6 +34,33 @@ object Runway {
       })
     })
   }
+
+  def getRunwaysGroupedByAirport: RDD[(String,List[String])] = {
+
+    val runways = getRunwaysFile
+
+    runways.mapPartitions(lines => {
+      val parser = new CSVParser(',')
+      lines.map(line => {
+        val columns = parser.parseLine(line)
+        Tuple2(columns(airportRefColumn),
+          columns(surfaceColumn))
+      })
+    }).groupByKey().map(x => (x._1, x._2.toList))
+  }
+
+  def getListOfOrderedLatitudes: List[(String, Long)] = {
+    val runways = getRunwaysFile
+
+    runways.mapPartitions(lines => {
+      val parser = new CSVParser(',')
+      lines.map(line => {
+        val columns = parser.parseLine(line)
+         columns(latitudeColumn)
+      })
+    }).countByValue().toList.sortBy(-_._2)
+  }
+
 
   private def getRunwaysFile: RDD[String] ={
     if(file == null)

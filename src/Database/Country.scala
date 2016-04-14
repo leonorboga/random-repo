@@ -2,6 +2,7 @@ package Database
 
 import au.com.bytecode.opencsv.CSVParser
 import java.io.File
+
 import org.apache.spark.rdd.RDD
 import Utilities.readFile
 
@@ -38,9 +39,25 @@ object Country {
       val parser = new CSVParser(',')
       lines.filter(line => {
         val columns = parser.parseLine(line)
-        columns(countryIDColumn).contentEquals(countryCode)
+        columns(countryIDColumn).toLowerCase().equals(countryCode.toLowerCase())
       })
     }).isEmpty()
+  }
+
+  def getCountryNameFromCode(countryCode: String): String = {
+
+    val countries = getCountriesFile
+
+    countries.mapPartitions(lines => {
+      val parser = new CSVParser(',')
+      lines.filter(line => {
+        val columns = parser.parseLine(line)
+        columns(countryIDColumn).equals(countryCode)
+      }).map(line => {
+        val columns = parser.parseLine(line)
+        columns(countryNameColumn)
+      })
+    }).first()
   }
 
   private def getCountriesFile: RDD[String] ={

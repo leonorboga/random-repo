@@ -1,4 +1,4 @@
-import Database.Query
+import Logic.{Query, Report}
 
 /**
   * Created by root on 4/10/16.
@@ -6,9 +6,10 @@ import Database.Query
 
 
 object Main {
-  def main(args: Array[String]): Unit ={
+  def main(args: Array[String]): Unit = {
 
-    while(true) {
+    while (true) {
+
       println("")
       println("")
       println("Welcome to our system!")
@@ -26,22 +27,26 @@ object Main {
 
       option match {
         case "1" => println("Please introduce country name:")
+          optionQuery(option)
         case "2" => println("Please introduce country code:")
+          optionQuery(option)
+        case "3" => println(Report.report())
         case _ => return
       }
+    }
+  }
 
+    private def optionQuery(option: String): Unit = {
       val input = readLine()
 
       option match {
         case "1" => Query.queryFromCountryName(input) match {
           case Left(msg) => println(msg)
           case Right(output) => println(output)
-          }
+        }
         case "2" =>
           val output = Query.queryFromCountryCode(input)
           println(output)
       }
     }
-
-  }
 }

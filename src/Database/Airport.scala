@@ -38,6 +38,33 @@ object Airport {
     })
   }
 
+  def getCountriesOrderedByNumberOfAirports: List[(String, Long)] = {
+
+    val airports = getAirportsFile
+
+    airports.mapPartitions(lines => {
+      val parser = new CSVParser(',')
+      lines.map(line => {
+        val columns = parser.parseLine(line)
+        Array(columns(isoCountryColumn)).mkString(",")
+      })
+    }).countByValue().toList
+  }
+
+  def getListOfAirportAndCountry: RDD[(String,String)] = {
+
+    val airports = getAirportsFile
+
+    airports.mapPartitions(lines => {
+      val parser = new CSVParser(',')
+      lines.map(line => {
+        val columns = parser.parseLine(line)
+        Tuple2(columns(airportIDColumn),
+          columns(isoCountryColumn))
+      })
+    })
+  }
+
   private def getAirportsFile: RDD[String] ={
     if(file == null)
     {
