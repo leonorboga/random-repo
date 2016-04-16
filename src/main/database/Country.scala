@@ -1,4 +1,4 @@
-package Database
+package main.database
 
 import au.com.bytecode.opencsv.CSVParser
 import java.io.File
@@ -7,7 +7,7 @@ import org.apache.spark.rdd.RDD
 import Utilities.readFile
 
 /**
-  * Query the Countries' database
+  * Query the Countries' main.database
   */
 object Country {
 

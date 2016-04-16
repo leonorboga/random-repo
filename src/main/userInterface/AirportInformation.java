@@ -1,9 +1,8 @@
-package UserInterface;
+package main.userInterface;
 
-import UserInterface.BackgroundWorkers.*;
+import main.userInterface.BackgroundWorkers.*;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;

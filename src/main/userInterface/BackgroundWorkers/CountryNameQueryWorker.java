@@ -1,6 +1,6 @@
-package UserInterface.BackgroundWorkers;
+package main.userInterface.BackgroundWorkers;
 
-import Logic.Query;
+import main.logic.Query;
 import javax.swing.*;
 
 /**

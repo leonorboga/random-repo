@@ -1,6 +1,6 @@
-package Logic
+package main.logic
 
-import Database.{Airport, Country, Runway}
+import main.database.{Airport, Country, Runway}
 
 /**
   * Implements the query option

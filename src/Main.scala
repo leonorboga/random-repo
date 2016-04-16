@@ -1,5 +1,5 @@
-import Logic.{Query, Report}
-import UserInterface.AirportInformation
+import main.logic.{Query, Report}
+import main.userInterface.AirportInformation
 
 /**
   * Created by root on 4/10/16.

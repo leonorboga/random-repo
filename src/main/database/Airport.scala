@@ -1,13 +1,14 @@
-package Database
+package main.database
 
 import java.io.File
 
 import au.com.bytecode.opencsv.CSVParser
+import com.typesafe.config.ConfigFactory
 import org.apache.spark.rdd.RDD
 import Utilities.readFile
 
 /**
-  * Query the Airports' database
+  * Query the Airports' main.database
   */
 
 object Airport {
@@ -74,6 +75,7 @@ object Airport {
   }
 
   private def loadAirportsFile(): RDD[String] ={
+    val value = ConfigFactory.load().getString("airportsFileRelativePath")
     val currentDir = new File(".").getAbsolutePath
     readFile(currentDir + "/resources/airports.csv")
   }

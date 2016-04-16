@@ -1,6 +1,6 @@
-package UserInterface.BackgroundWorkers;
+package main.userInterface.BackgroundWorkers;
 
-import Logic.Report;
+import main.logic.Report;
 
 import javax.swing.*;
 

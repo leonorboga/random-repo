@@ -1,6 +1,6 @@
-package Database
+package main.database
 
-import Configuration.Spark
+import main.configuration.Spark
 import org.apache.spark.rdd.RDD
 
 /**

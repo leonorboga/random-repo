@@ -1,4 +1,4 @@
-package Configuration
+package main.configuration
 
 import org.apache.spark.{SparkConf, SparkContext}
 
