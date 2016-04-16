@@ -1,4 +1,5 @@
 import Logic.{Query, Report}
+import UserInterface.AirportInformation
 
 /**
   * Created by root on 4/10/16.
@@ -8,6 +9,9 @@ import Logic.{Query, Report}
 object Main {
   def main(args: Array[String]): Unit = {
 
+    new AirportInformation()
+
+    /**
     while (true) {
 
       println("")
@@ -48,5 +52,7 @@ object Main {
           val output = Query.queryFromCountryCode(input)
           println(output)
       }
+      */
     }
+
 }

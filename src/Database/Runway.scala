@@ -2,6 +2,7 @@ package Database
 
 import au.com.bytecode.opencsv.CSVParser
 import java.io.File
+
 import org.apache.spark.rdd.RDD
 import Utilities.readFile
 
@@ -15,6 +16,7 @@ object Runway {
   val lengthFtColumn = 3
   val widthFtColumn = 4
   val surfaceColumn = 5
+  val lightedColumn = 6
   val latitudeColumn = 8
 
   def getRunwaysFromAirportCode(airportCode: String): RDD[Array[String]] = {
@@ -30,7 +32,8 @@ object Runway {
         val columns = parser.parseLine(line)
         Array(columns(lengthFtColumn),
           columns(widthFtColumn),
-          columns(surfaceColumn))
+          columns(surfaceColumn),
+          if (columns(lightedColumn).equals("0")) "false" else "true")
       })
     })
   }

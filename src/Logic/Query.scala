@@ -2,35 +2,41 @@ package Logic
 
 import Database.{Airport, Country, Runway}
 
-import scala.util.{Either, Left, Right}
-
 /**
   * Implements the query option
+  *
+  * Query Option will ask the user for the country name or code and
+  * print the airports & runways at each airport. The input can be
+  * country code or country name.
   */
 object Query {
 
-  /**
-    * Query Option will ask the user for the country name or code and
-    * print the airports & runways at each airport. The input can be
-    * country code or country name.
-    */
+  val airportIDColumn = 0
+  val airportTypeColumn = 1
+  val airportNameColumn = 2
+  val airportMunicipalityColumn = 3
 
-  def queryFromCountryName(countryName: String): Either[String, String] ={
+  val countryIDColumn = 0
+  val countryNameColumn = 1
 
-    if(countryName.length < 3)
-    {
-      return Left("A country name has to have a minimum of 3 characters!")
-    }
+  val runwayLengthFtColumn = 0
+  val runwayWidthFtColumn = 1
+  val runwaySurfaceTypeColumn = 2
+  val runwayLightedColumn = 3
+
+  val newLine = sys.props("line.separator")
+
+  def queryFromCountryName(countryName: String): String ={
 
     val queryOutput:StringBuilder = new StringBuilder()
-    val countryCodes = Country.getCountryCodeFromName(countryName)
+    val countryCodesAndNames = Country.getCountryCodeFromName(countryName)
 
-    countryCodes.collect().foreach(countryCode => {
+    countryCodesAndNames.collect().foreach(country => {
 
-      queryOutput.append(getListOfAirports(countryCode))
+      queryOutput.append(getListOfAirports(country(countryIDColumn), country(countryNameColumn)))
     })
 
-    Right(queryOutput.toString())
+    queryOutput.toString()
   }
 
   def queryFromCountryCode(countryCode: String): String = {
@@ -38,26 +44,47 @@ object Query {
     val queryOutput:StringBuilder = new StringBuilder()
 
     if(Country.checkIfCountryCodeExists(countryCode)) {
-      queryOutput.append(getListOfAirports(countryCode))
+
+      val countryName = Country.getCountryNameFromCode(countryCode)
+      queryOutput.append(getListOfAirports(countryCode, countryName))
     }
 
     queryOutput.toString()
   }
 
-  private def getListOfAirports(countryCode: String): String = {
+  private def getListOfAirports(countryCode: String, countryName:String): String = {
     val queryOutput:StringBuilder = new StringBuilder()
 
     val listOfAirports = Airport.getAirportsFromCountryCode(countryCode)
 
     listOfAirports.collect().foreach(airport => {
-      queryOutput.append(" | ")
-      queryOutput.append(airport(1)).append(" ")
-      queryOutput.append(airport(2)).append(" ")
-      queryOutput.append(airport(3)).append(" ")
-      queryOutput.append(" runways: ")
 
-      val runways = Runway.getRunwaysFromAirportCode(airport(0))
-      runways.collect().foreach(r => queryOutput.append(" r: ").append(r.mkString(" ")))
+      queryOutput.append("Country: ")
+      queryOutput.append(countryName).append(newLine)
+      queryOutput.append("Municipality (10) : ")
+      queryOutput.append(airport(airportMunicipalityColumn)).append(newLine)
+      queryOutput.append("Name (3) : ")
+      queryOutput.append(airport(airportNameColumn)).append(newLine)
+      queryOutput.append("Type (2): ")
+      queryOutput.append(airport(airportTypeColumn)).append(newLine)
+      queryOutput.append("Runways: ")
+      queryOutput.append(newLine)
+
+      val runways = Runway.getRunwaysFromAirportCode(airport(airportIDColumn))
+      runways.collect().foreach(runway => {
+
+        queryOutput.append("Surface Type (5): ")
+        queryOutput.append(runway(runwaySurfaceTypeColumn)).append(newLine)
+        queryOutput.append("Length (ft) (3): ")
+        queryOutput.append(runway(runwayLengthFtColumn)).append(newLine)
+        queryOutput.append("Width (ft) (4): ")
+        queryOutput.append(runway(runwayWidthFtColumn)).append(newLine)
+        queryOutput.append("Lighted (6): ")
+        queryOutput.append(runway(runwayLightedColumn)).append(newLine)
+        queryOutput.append(newLine)
+      })
+
+      queryOutput.append(newLine)
     })
 
     queryOutput.toString()

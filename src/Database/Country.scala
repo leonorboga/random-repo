@@ -15,7 +15,7 @@ object Country {
   val countryNameColumn = 2
   val countryIDColumn = 1
 
-  def getCountryCodeFromName(countryName: String): RDD[String] = {
+  def getCountryCodeFromName(countryName: String): RDD[Array[String]] = {
 
     val countries = getCountriesFile
 
@@ -26,7 +26,8 @@ object Country {
         columns(countryNameColumn).toLowerCase().startsWith(countryName.toLowerCase())
       }).map(line => {
         val columns = parser.parseLine(line)
-        columns(countryIDColumn)
+        Array(columns(countryIDColumn),
+          columns(countryNameColumn))
       })
     })
   }

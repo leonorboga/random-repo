@@ -7,7 +7,7 @@ import Database.{Airport, Country, Runway}
   */
 object Report {
 
-  val reportEntries = 10
+  val newLine = sys.props("line.separator")
 
   /**
     *  Choosing Reports will print the following:
@@ -18,56 +18,69 @@ object Report {
     * (indicated in "le_ident" column)
     */
 
-  def report(): String = {
-
+  def airportsPerCountryWithCount(numberOfResults:Int): String ={
     val reportOutput:StringBuilder = new StringBuilder()
 
-    reportOutput.append("10 countries with highest number of airports (with count): ")
-    reportOutput.append(sys.props("line.separator"))
-    var countriesMoreAirports = Airport.getCountriesOrderedByNumberOfAirports.sortBy(-_._2).take(reportEntries)
-    countriesMoreAirports = countriesMoreAirports.map(x => new Tuple2(Country.getCountryNameFromCode(x._1), x._2))
-    reportOutput.append(countriesMoreAirports)
+    reportOutput.append("Countries with highest number of airports (with count): ")
+    reportOutput.append(newLine)
+    val countriesMoreAirports = Airport.getCountriesOrderedByNumberOfAirports.sortBy(-_._2).take(numberOfResults)
+    val countriesWithNameMoreAirports = countriesMoreAirports.map(x => Tuple2(Country.getCountryNameFromCode(x._1), x._2))
 
-    reportOutput.append(sys.props("line.separator"))
-    reportOutput.append(sys.props("line.separator"))
-    reportOutput.appendAll("10 countries with lowest number of airports (with count): ")
-    reportOutput.append(sys.props("line.separator"))
-    var countriesLessAirports = Airport.getCountriesOrderedByNumberOfAirports.sortBy(_._2).take(reportEntries)
-    countriesLessAirports = countriesLessAirports.map(x => new Tuple2(Country.getCountryNameFromCode(x._1), x._2))
-    reportOutput.append(countriesLessAirports)
+    countriesWithNameMoreAirports.foreach(country => {
+      reportOutput.append(country._1).append(": ")
+      reportOutput.append(country._2)
+      reportOutput.append(newLine)
+    })
 
-    reportOutput.append(sys.props("line.separator"))
-    reportOutput.append(sys.props("line.separator"))
-    reportOutput.appendAll("Types of runway per country")
-    reportOutput.append(sys.props("line.separator"))
-    reportOutput.append(getRunwaysPerCountry)
+    reportOutput.append(newLine)
+    reportOutput.append(newLine)
+    reportOutput.appendAll("Countries with lowest number of airports (with count): ")
+    reportOutput.append(newLine)
+    val countriesLessAirports = Airport.getCountriesOrderedByNumberOfAirports.sortBy(_._2).take(numberOfResults)
+    val countriesWithNameLessAirports = countriesLessAirports.map(x => Tuple2(Country.getCountryNameFromCode(x._1), x._2))
 
-    reportOutput.append(sys.props("line.separator"))
-    reportOutput.append(sys.props("line.separator"))
-    reportOutput.appendAll("Print the top 10 most common runway latitude")
-    reportOutput.append(sys.props("line.separator"))
-    reportOutput.append(Runway.getListOfOrderedLatitudes.take(10))
-//    reportOutput.append(Runway.getListOfOrderedLatitudes.take(10).map(x => x._1).mkString(","))
+    countriesWithNameLessAirports.foreach(country => {
+      reportOutput.append(country._1).append(": ")
+      reportOutput.append(country._2)
+      reportOutput.append(newLine)
+    })
 
     reportOutput.toString()
   }
 
+  def getOrderedRunwayLatitudes(numberOfResults:Int): String =
+  {
+    val reportOutput:StringBuilder = new StringBuilder()
+    reportOutput.append(Runway.getListOfOrderedLatitudes.take(numberOfResults).map(x => x._1).mkString(","))
+    reportOutput.toString()
+  }
 
-  private def getRunwaysPerCountry: String = {
+  def getTypeOfRunwaysPerCountry: String = {
+    val reportOutput:StringBuilder = new StringBuilder()
+    reportOutput.append(getRunwaysPerCountry)
+    reportOutput.toString()
+  }
 
-    val queryOutput:StringBuilder = new StringBuilder()
+    private def getRunwaysPerCountry: String = {
 
-    val runways = Runway.getRunwaysGroupedByAirport.sortBy(x => x._1)
-    //queryOutput.append(runways.collect().mkString(sys.props("line.separator")))
+      val reportOutput:StringBuilder = new StringBuilder()
 
-    val airports = Airport.getListOfAirportAndCountry.sortBy(x => x._1).collect().toList
+      val runways = Runway.getRunwaysGroupedByAirport.sortBy(x => x._1)
+      val airports = Airport.getListOfAirportAndCountry.sortBy(x => x._1).collect().toList
 
-   // replaces the code of the airport by the code of the country where the airport is situated
-    val runwaysAndCountries = runways.map(line => Tuple2(getCountryAirport(airports, line._1), line._2))
-    val runwaysGroupedByCountry = runwaysAndCountries.groupByKey().map(x => (x._1, x._2.toList.flatten.distinct))
+     // replaces the code of the airport by the code of the country where the airport is situated
+      val runwaysAndCountriesCodes = runways.map(line => Tuple2(getCountryAirport(airports, line._1), line._2))
+      val runwaysGroupedByCountryCode = runwaysAndCountriesCodes.groupByKey().map(x => (x._1, x._2.toList.flatten.distinct))
 
-    queryOutput.append(runwaysGroupedByCountry.collect().mkString("\n"))
-    queryOutput.toString()
+      val runwaysGroupedByCountryName = runwaysGroupedByCountryCode.map(x => Tuple2(Country.getCountryNameFromCode(x._1), x._2))
+
+      runwaysGroupedByCountryName.collect().foreach(country => {
+        reportOutput.append(country._1).append(": ")
+        reportOutput.append(country._2.mkString(", "))
+        reportOutput.append(newLine)
+      })
+
+      reportOutput.toString()
   }
 
   private def getCountryAirport(list:List[(String,String)], airportCode:String): String = {
