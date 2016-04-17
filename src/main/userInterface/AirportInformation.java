@@ -54,42 +54,10 @@ public class AirportInformation extends JFrame{
 
                 if (isInputForQueryByCountryNameValid()) {
                     final CountryNameQueryWorker queryWorker = new CountryNameQueryWorker(countryName.getText());
-                    queryWorker.addPropertyChangeListener(new PropertyChangeListener() {
 
-                        public void propertyChange(final PropertyChangeEvent event) {
-                            switch (event.getPropertyName()) {
-                                case "state":
-                                    switch ((StateValue) event.getNewValue()) {
-                                        case DONE:
-                                            try {
-                                                printWorkerResults(String.format("List of airport information that correspond to country name started by '%s': ", countryName.getText()),
-                                                        queryWorker.get());
-                                                setCurrentWorker(null);
-                                            } catch (CancellationException e1) {
-                                                outputConsole.append("The query list of airports and runways per country (country name) was cancelled.");
-                                                outputConsole.append(System.lineSeparator());
-                                                setCurrentWorker(null);
-                                            } catch (ExecutionException e1) {
-                                                outputConsole.append(System.lineSeparator());
-                                                outputConsole.append("The query produced no results");
-                                                outputConsole.append(System.lineSeparator());
-                                                setCurrentWorker(null);
-                                            }catch (Exception e1) {
-                                                outputConsole.append(e1.getMessage());
-                                                setCurrentWorker(null);
-                                            }
-                                            break;
-                                    }
-                                break;
-                            }
-                        }
-                    });
-
-                    try {
-                        startWorker(queryWorker);
-                    } catch (Exception e1) {
-                        outputConsole.append(e1.getMessage());
-                    }
+                    runWorkerAndGetResult(queryWorker,
+                            String.format("List of airport information that correspond to country name started by '%s': ", countryName.getText()),
+                            "The query list of airports and runways per country (country name) was cancelled.");
                 }
             }
         });
@@ -105,43 +73,57 @@ public class AirportInformation extends JFrame{
 
                     final CountryCodeQueryWorker queryWorker = new CountryCodeQueryWorker(countryCode.getText());
 
-                    queryWorker.addPropertyChangeListener(new PropertyChangeListener() {
-                        public void propertyChange(final PropertyChangeEvent event) {
-                            switch (event.getPropertyName()) {
-                                case "state":
-                                    switch ((StateValue) event.getNewValue()) {
-                                        case DONE:
-                                            try {
-                                                printWorkerResults(String.format("List of airports information that correspond to country code '%s': ", countryCode.getText()),
-                                                        queryWorker.get());
-                                                setCurrentWorker(null);
-                                            } catch (CancellationException e1) {
-                                                outputConsole.append(System.lineSeparator());
-                                                outputConsole.append("The query list of airports and runways per country (country code) was cancelled.");
-                                                outputConsole.append(System.lineSeparator());
-                                                setCurrentWorker(null);
-                                            } catch (ExecutionException e1) {
-                                                outputConsole.append(System.lineSeparator());
-                                                outputConsole.append("The query produced no results");
-                                                outputConsole.append(System.lineSeparator());
-                                                setCurrentWorker(null);
-                                            } catch (Exception e1) {
-                                                outputConsole.append(e1.getMessage());
-                                                setCurrentWorker(null);
-                                            }
-                                            break;
-                                    }
-                                    break;
-                            }
-                        }
-                    });
-
-                    try {
-                        startWorker(queryWorker);
-                    } catch (Exception e1) {
-                        outputConsole.append(e1.getMessage());
-                    }
+                    runWorkerAndGetResult(queryWorker,
+                            String.format("List of airports information that correspond to country code '%s': ", countryCode.getText()),
+                            "The query list of airports and runways per country (country code) was cancelled.");
                 }
+            }
+        });
+
+
+        /**
+         * report about the highest number of airports (with count) and
+         countries with lowest number of airports.
+         */
+        airportsWithCountryPerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final int numberOfResults = Integer.parseInt(spinner1.getValue().toString());
+                final ListOfOrderedAirportsPerCountryWithCountWorker reportWorker = new ListOfOrderedAirportsPerCountryWithCountWorker(numberOfResults);
+
+                runWorkerAndGetResult(reportWorker,
+                        String.format("Report for airports per country with an output of %d results:", numberOfResults),
+                        "The report of airports per country was cancelled.");
+            }
+        });
+
+
+        /**
+         * Report about the top most common runway latitude
+         */
+        runwayLatitudeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final int numberOfResults = Integer.parseInt(spinner2.getValue().toString());
+                final ListOfOrderedRunwaysLatitudeWorker reportWorker = new ListOfOrderedRunwaysLatitudeWorker(numberOfResults);
+
+                runWorkerAndGetResult(reportWorker,
+                        String.format("Report for ordered most common airport latitudes with an output of %d results (from most common to less common) :", numberOfResults),
+                        "The report for ordered most common airport latitudes was cancelled.");
+            }
+        });
+
+        /**
+         * Report for the type of runways per country
+         */
+        typeRunwaysCountryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final TypeOfRunwayPerCountryWorker reportWorker = new TypeOfRunwayPerCountryWorker();
+
+                runWorkerAndGetResult(reportWorker,
+                        "Report of the type of runways per country:",
+                        "The report of the type of runways per country was cancelled.");
             }
         });
 
@@ -159,151 +141,6 @@ public class AirportInformation extends JFrame{
                 {
                     currentWorker.cancel(true);
                     currentWorker = null;
-                }
-            }
-        });
-
-        /**
-         * report about the highest number of airports (with count) and
-         countries with lowest number of airports.
-         */
-        airportsWithCountryPerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final int numberOfResults = Integer.parseInt(spinner1.getValue().toString());
-                final ListOfOrderedAirportsPerCountryWithCountWorker reportWorker = new ListOfOrderedAirportsPerCountryWithCountWorker(numberOfResults);
-
-                reportWorker.addPropertyChangeListener(new PropertyChangeListener() {
-                    public void propertyChange(final PropertyChangeEvent event) {
-                        switch (event.getPropertyName()) {
-                            case "state":
-                                switch ((StateValue) event.getNewValue()) {
-                                    case DONE:
-                                        try {
-                                            printWorkerResults(String.format("Report for airports per country with an output of %d results:", numberOfResults),
-                                                    reportWorker.get());
-                                            setCurrentWorker(null);
-                                        } catch (CancellationException e1) {
-                                            outputConsole.append(System.lineSeparator());
-                                            outputConsole.append("The report of airports per country was cancelled.");
-                                            outputConsole.append(System.lineSeparator());
-                                            setCurrentWorker(null);
-                                        } catch (ExecutionException e1) {
-                                            outputConsole.append(System.lineSeparator());
-                                            outputConsole.append("The report produced no results");
-                                            outputConsole.append(System.lineSeparator());
-                                            setCurrentWorker(null);
-                                        } catch (Exception e1) {
-                                            outputConsole.append(e1.getMessage());
-                                            setCurrentWorker(null);
-                                        }
-                                        break;
-                                }
-                                break;
-                        }
-                    }
-                });
-
-                try {
-                    startWorker(reportWorker);
-                } catch (Exception e1) {
-                    outputConsole.append(e1.getMessage());
-                }
-            }
-        });
-
-
-        /**
-         * Report about the top most common runway latitude
-         */
-        runwayLatitudeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final int numberOfResults = Integer.parseInt(spinner2.getValue().toString());
-                final ListOfOrderedRunwaysLatitudeWorker reportWorker = new ListOfOrderedRunwaysLatitudeWorker(numberOfResults);
-
-                reportWorker.addPropertyChangeListener(new PropertyChangeListener() {
-                    public void propertyChange(final PropertyChangeEvent event) {
-                        switch (event.getPropertyName()) {
-                            case "state":
-                                switch ((StateValue) event.getNewValue()) {
-                                    case DONE:
-                                        try {
-                                            printWorkerResults(String.format("Report for ordered most common airport latitudes with an output of %d results (from most common to less common) :", numberOfResults),
-                                                    reportWorker.get());
-                                            setCurrentWorker(null);
-                                        } catch (CancellationException e1) {
-                                            outputConsole.append(System.lineSeparator());
-                                            outputConsole.append("The report for ordered most common airport latitudes was cancelled.");
-                                            outputConsole.append(System.lineSeparator());
-                                            setCurrentWorker(null);
-                                        } catch (ExecutionException e1) {
-                                            outputConsole.append(System.lineSeparator());
-                                            outputConsole.append("The report produced no results");
-                                            outputConsole.append(System.lineSeparator());
-                                            setCurrentWorker(null);
-                                        } catch (Exception e1) {
-                                            outputConsole.append(e1.getMessage());
-                                            setCurrentWorker(null);
-                                        }
-                                        break;
-                                }
-                                break;
-                        }
-                    }
-                });
-
-                try {
-                    startWorker(reportWorker);
-                } catch (Exception e1) {
-                    outputConsole.append(e1.getMessage());
-                }
-            }
-        });
-
-        /**
-         * Report for the type of runways per country
-         */
-        typeRunwaysCountryButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final TypeOfRunwayPerCountryWorker reportWorker = new TypeOfRunwayPerCountryWorker();
-
-                reportWorker.addPropertyChangeListener(new PropertyChangeListener() {
-                    public void propertyChange(final PropertyChangeEvent event) {
-                        switch (event.getPropertyName()) {
-                            case "state":
-                                switch ((StateValue) event.getNewValue()) {
-                                    case DONE:
-                                        try {
-                                            printWorkerResults("Report of the type of runways per country:",
-                                                    reportWorker.get());
-                                            setCurrentWorker(null);
-                                        } catch (CancellationException e1) {
-                                            outputConsole.append(System.lineSeparator());
-                                            outputConsole.append("The report of the type of runways per country was cancelled.");
-                                            outputConsole.append(System.lineSeparator());
-                                            setCurrentWorker(null);
-                                        } catch (ExecutionException e1) {
-                                            outputConsole.append(System.lineSeparator());
-                                            outputConsole.append("The report produced no results");
-                                            outputConsole.append(System.lineSeparator());
-                                            setCurrentWorker(null);
-                                        } catch (Exception e1) {
-                                            outputConsole.append(e1.getMessage());
-                                            setCurrentWorker(null);
-                                        }
-                                        break;
-                                }
-                                break;
-                        }
-                    }
-                });
-
-                try {
-                    startWorker(reportWorker);
-                } catch (Exception e1) {
-                    outputConsole.append(e1.getMessage());
                 }
             }
         });
@@ -400,6 +237,44 @@ public class AirportInformation extends JFrame{
         SpinnerModel model2 = new SpinnerNumberModel(initValue, min, max, step);
         spinner1 = new JSpinner(model1);
         spinner2 = new JSpinner(model2);
+    }
+
+    private void runWorkerAndGetResult(final SwingWorker<String, String> worker,final String workerDescription, final String workerCancelledDescription){
+        worker.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(final PropertyChangeEvent event) {
+                switch (event.getPropertyName()) {
+                    case "state":
+                        switch ((StateValue) event.getNewValue()) {
+                            case DONE:
+                                try {
+                                    printWorkerResults(workerDescription, worker.get());
+                                    setCurrentWorker(null);
+                                } catch (CancellationException e1) {
+                                    outputConsole.append(workerCancelledDescription);
+                                    outputConsole.append(System.lineSeparator());
+                                    setCurrentWorker(null);
+                                } catch (ExecutionException e1) {
+                                    outputConsole.append(System.lineSeparator());
+                                    outputConsole.append("The query produced no results");
+                                    outputConsole.append(System.lineSeparator());
+                                    setCurrentWorker(null);
+                                }catch (Exception e1) {
+                                    outputConsole.append(e1.getMessage());
+                                    setCurrentWorker(null);
+                                }
+                                break;
+                        }
+                        break;
+                }
+            }
+        });
+
+        try {
+            startWorker(worker);
+        } catch (Exception e1) {
+            outputConsole.append(e1.getMessage());
+        }
     }
 }
 

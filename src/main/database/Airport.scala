@@ -3,7 +3,6 @@ package main.database
 import java.io.File
 
 import au.com.bytecode.opencsv.CSVParser
-import com.typesafe.config.ConfigFactory
 import org.apache.spark.rdd.RDD
 import Utilities.readFile
 
