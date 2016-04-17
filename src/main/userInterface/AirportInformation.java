@@ -232,6 +232,8 @@ public class AirportInformation extends JFrame{
     private void setConfiguration() {
         setContentPane(rootPanel);
         pack();
+        setSize(700,600);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
