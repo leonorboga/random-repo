@@ -70,6 +70,7 @@ object Query {
       queryOutput.append(airport(airportNameColumn)).append(newLine)
       queryOutput.append(resBundle.getString("Type"))
       queryOutput.append(airport(airportTypeColumn)).append(newLine)
+      queryOutput.append(newLine)
       queryOutput.append(resBundle.getString("Runways"))
       queryOutput.append(newLine)
 

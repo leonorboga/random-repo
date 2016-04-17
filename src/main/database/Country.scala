@@ -49,7 +49,7 @@ object Country {
 
     val countries = getCountriesFile
 
-    countries.mapPartitions(lines => {
+    val countryName = countries.mapPartitions(lines => {
       val parser = new CSVParser(',')
       lines.filter(line => {
         val columns = parser.parseLine(line)
@@ -58,7 +58,8 @@ object Country {
         val columns = parser.parseLine(line)
         columns(countryNameColumn)
       })
-    }).first()
+    })
+    if (countryName.isEmpty()) "" else countryName.first()
   }
 
   private def getCountriesFile: RDD[String] ={

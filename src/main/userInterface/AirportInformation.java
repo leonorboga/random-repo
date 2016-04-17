@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker.StateValue;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Interface class that prints queries and reports made to the Airport Information System
@@ -170,10 +171,16 @@ public class AirportInformation extends JFrame{
         outputConsole.append(description);
         outputConsole.append(System.lineSeparator());
         outputConsole.append(System.lineSeparator());
-        outputConsole.append(result);
-        outputConsole.append(System.lineSeparator());
-        outputConsole.append(System.lineSeparator());
-        outputConsole.append(resBundle.getString("QueryCompleted"));
+
+        if(result.equals("")) {
+            outputConsole.append(resBundle.getString("QueryReportNoResults"));
+        }
+        else {
+            outputConsole.append(result);
+            outputConsole.append(System.lineSeparator());
+            outputConsole.append(System.lineSeparator());
+            outputConsole.append(resBundle.getString("QueryCompleted"));
+        }
         outputConsole.append(System.lineSeparator());
     }
 
@@ -232,6 +239,7 @@ public class AirportInformation extends JFrame{
     private void setConfiguration() {
         setContentPane(rootPanel);
         pack();
+        rootPanel.setBorder(new EmptyBorder(10, 10, 5, 10));
         setSize(700,600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

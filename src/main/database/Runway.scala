@@ -47,7 +47,7 @@ object Runway {
       lines.map(line => {
         val columns = parser.parseLine(line)
         Tuple2(columns(airportRefColumn),
-          columns(surfaceColumn))
+          columns(surfaceColumn).toUpperCase)
       })
     }).groupByKey().map(x => (x._1, x._2.toList))
   }
