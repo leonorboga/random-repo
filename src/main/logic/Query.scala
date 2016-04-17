@@ -1,5 +1,7 @@
 package main.logic
 
+import java.util.{Locale, ResourceBundle}
+
 import main.database.{Airport, Country, Runway}
 
 /**
@@ -10,6 +12,7 @@ import main.database.{Airport, Country, Runway}
   * country code or country name.
   */
 object Query {
+  val resBundle = ResourceBundle.getBundle("main/resources/applicationMessages", Locale.getDefault)
 
   val airportIDColumn = 0
   val airportTypeColumn = 1
@@ -59,27 +62,27 @@ object Query {
 
     listOfAirports.collect().foreach(airport => {
 
-      queryOutput.append("Country: ")
+      queryOutput.append(resBundle.getString("Country"))
       queryOutput.append(countryName).append(newLine)
-      queryOutput.append("Municipality: ")
+      queryOutput.append(resBundle.getString("Municipality"))
       queryOutput.append(airport(airportMunicipalityColumn)).append(newLine)
-      queryOutput.append("Name: ")
+      queryOutput.append(resBundle.getString("Name"))
       queryOutput.append(airport(airportNameColumn)).append(newLine)
-      queryOutput.append("Type: ")
+      queryOutput.append(resBundle.getString("Type"))
       queryOutput.append(airport(airportTypeColumn)).append(newLine)
-      queryOutput.append("Runways: ")
+      queryOutput.append(resBundle.getString("Runways"))
       queryOutput.append(newLine)
 
       val runways = Runway.getRunwaysFromAirportCode(airport(airportIDColumn))
       runways.collect().foreach(runway => {
 
-        queryOutput.append("Surface Type: ")
+        queryOutput.append(resBundle.getString("SurfaceType"))
         queryOutput.append(runway(runwaySurfaceTypeColumn)).append(newLine)
-        queryOutput.append("Length (ft): ")
+        queryOutput.append(resBundle.getString("Length"))
         queryOutput.append(runway(runwayLengthFtColumn)).append(newLine)
-        queryOutput.append("Width (ft): ")
+        queryOutput.append(resBundle.getString("Width"))
         queryOutput.append(runway(runwayWidthFtColumn)).append(newLine)
-        queryOutput.append("Lighted: ")
+        queryOutput.append(resBundle.getString("Lighted"))
         queryOutput.append(runway(runwayLightedColumn)).append(newLine)
         queryOutput.append(newLine)
       })

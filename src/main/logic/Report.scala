@@ -1,12 +1,13 @@
 package main.logic
 
+import java.util.{Locale, ResourceBundle}
+
 import main.database.{Airport, Country, Runway}
 
 /**
   * Implements the option report
   */
 object Report {
-
   val newLine = sys.props("line.separator")
 
   /**
@@ -21,8 +22,6 @@ object Report {
   def airportsPerCountryWithCount(numberOfResults:Int): String ={
     val reportOutput:StringBuilder = new StringBuilder()
 
-    reportOutput.append("Countries with highest number of airports (with count): ")
-    reportOutput.append(newLine)
     val countriesMoreAirports = Airport.getCountriesOrderedByNumberOfAirports.sortBy(-_._2).take(numberOfResults)
     val countriesWithNameMoreAirports = countriesMoreAirports.map(x => Tuple2(Country.getCountryNameFromCode(x._1), x._2))
 
@@ -32,9 +31,6 @@ object Report {
       reportOutput.append(newLine)
     })
 
-    reportOutput.append(newLine)
-    reportOutput.append(newLine)
-    reportOutput.appendAll("Countries with lowest number of airports (with count): ")
     reportOutput.append(newLine)
     val countriesLessAirports = Airport.getCountriesOrderedByNumberOfAirports.sortBy(_._2).take(numberOfResults)
     val countriesWithNameLessAirports = countriesLessAirports.map(x => Tuple2(Country.getCountryNameFromCode(x._1), x._2))

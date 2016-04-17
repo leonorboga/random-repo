@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker.StateValue;
@@ -15,6 +17,7 @@ import javax.swing.SwingWorker.StateValue;
  * Interface class that prints queries and reports made to the Airport Information System
  */
 public class AirportInformation extends JFrame{
+    final private ResourceBundle resBundle = ResourceBundle.getBundle("main/resources/applicationMessages", Locale.getDefault());
     private JTextField countryName;
     private JTextField countryCode;
     private JButton queryCountriesByNameButton;
@@ -56,8 +59,8 @@ public class AirportInformation extends JFrame{
                     final CountryNameQueryWorker queryWorker = new CountryNameQueryWorker(countryName.getText());
 
                     runWorkerAndGetResult(queryWorker,
-                            String.format("List of airport information that correspond to country name started by '%s': ", countryName.getText()),
-                            "The query list of airports and runways per country (country name) was cancelled.");
+                            String.format(resBundle.getString("ListAirportInformationCountryName"), countryName.getText()),
+                            resBundle.getString("ListAirportInformationCountryNameCancelled"));
                 }
             }
         });
@@ -74,8 +77,8 @@ public class AirportInformation extends JFrame{
                     final CountryCodeQueryWorker queryWorker = new CountryCodeQueryWorker(countryCode.getText());
 
                     runWorkerAndGetResult(queryWorker,
-                            String.format("List of airports information that correspond to country code '%s': ", countryCode.getText()),
-                            "The query list of airports and runways per country (country code) was cancelled.");
+                            String.format(resBundle.getString("ListAirportInformationCountryCode"), countryCode.getText()),
+                            resBundle.getString("ListAirportInformationCountryCodeCancelled"));
                 }
             }
         });
@@ -89,11 +92,12 @@ public class AirportInformation extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 final int numberOfResults = Integer.parseInt(spinner1.getValue().toString());
-                final ListOfOrderedAirportsPerCountryWithCountWorker reportWorker = new ListOfOrderedAirportsPerCountryWithCountWorker(numberOfResults);
+                final ListOfOrderedAirportsPerCountryWithCountWorker reportWorker =
+                        new ListOfOrderedAirportsPerCountryWithCountWorker(numberOfResults);
 
                 runWorkerAndGetResult(reportWorker,
-                        String.format("Report for airports per country with an output of %d results:", numberOfResults),
-                        "The report of airports per country was cancelled.");
+                        String.format(resBundle.getString("ReportAirportsPerCountry"), numberOfResults),
+                        resBundle.getString("ReportAirportsPerCountryCancelled"));
             }
         });
 
@@ -105,11 +109,12 @@ public class AirportInformation extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 final int numberOfResults = Integer.parseInt(spinner2.getValue().toString());
-                final ListOfOrderedRunwaysLatitudeWorker reportWorker = new ListOfOrderedRunwaysLatitudeWorker(numberOfResults);
+                final ListOfOrderedRunwaysLatitudeWorker reportWorker =
+                        new ListOfOrderedRunwaysLatitudeWorker(numberOfResults);
 
                 runWorkerAndGetResult(reportWorker,
-                        String.format("Report for ordered most common airport latitudes with an output of %d results (from most common to less common) :", numberOfResults),
-                        "The report for ordered most common airport latitudes was cancelled.");
+                        String.format(resBundle.getString("ReportMostCommonAirportLatitudes"), numberOfResults),
+                        resBundle.getString("ReportMostCommonAirportLatitudesCancelled"));
             }
         });
 
@@ -122,8 +127,8 @@ public class AirportInformation extends JFrame{
                 final TypeOfRunwayPerCountryWorker reportWorker = new TypeOfRunwayPerCountryWorker();
 
                 runWorkerAndGetResult(reportWorker,
-                        "Report of the type of runways per country:",
-                        "The report of the type of runways per country was cancelled.");
+                        resBundle.getString("ReportTypeOfRunwaysPerCountry"),
+                        resBundle.getString("ReportTypeOfRunwaysPerCountryCancelled"));
             }
         });
 
@@ -150,13 +155,13 @@ public class AirportInformation extends JFrame{
     private void startWorker(SwingWorker<String, String> workerToStart)
     {
         if(canQueryBeStarted()) {
-            outputConsole.append("Your query is being performed... please wait...");
+            outputConsole.append(resBundle.getString("QueryReportBeingPerformedPleaseWait"));
             outputConsole.append(System.lineSeparator());
             setCurrentWorker(workerToStart);
             workerToStart.execute();
         }
         else{
-            outputConsole.append("Please wait until current query / report ends or cancel current query / report");
+            outputConsole.append(resBundle.getString("PleaseWaitCurrentQueryReport"));
         }
     }
 
@@ -168,7 +173,7 @@ public class AirportInformation extends JFrame{
         outputConsole.append(result);
         outputConsole.append(System.lineSeparator());
         outputConsole.append(System.lineSeparator());
-        outputConsole.append("Query completed!");
+        outputConsole.append(resBundle.getString("QueryCompleted"));
         outputConsole.append(System.lineSeparator());
     }
 
@@ -184,7 +189,8 @@ public class AirportInformation extends JFrame{
     {
         if(!isCountryNameFilledIn() || !hasCountryNameMinimunOfCharacters())
         {
-            outputConsole.append(String.format("Please insert a country name (minimum of %d characters).\n", minimumCountryNameCharacters));
+            outputConsole.append(String.format(resBundle.getString("CountryNameMinCharacters"), minimumCountryNameCharacters));
+            outputConsole.append(System.lineSeparator());
             return false;
         }
 
@@ -195,7 +201,8 @@ public class AirportInformation extends JFrame{
     {
         if(!isCountryCodeFilledIn() || !hasCountryCodeExactNumOfCharacters())
         {
-            outputConsole.append(String.format("Please insert a country code (with exactly %d characters).\n", minimumCountryCodeCharacters));
+            outputConsole.append(String.format(resBundle.getString("CountryCodeNumberCharacters"), minimumCountryCodeCharacters));
+            outputConsole.append(System.lineSeparator());
             return false;
         }
 
@@ -239,7 +246,10 @@ public class AirportInformation extends JFrame{
         spinner2 = new JSpinner(model2);
     }
 
-    private void runWorkerAndGetResult(final SwingWorker<String, String> worker,final String workerDescription, final String workerCancelledDescription){
+    private void runWorkerAndGetResult(final SwingWorker<String, String> worker,
+                                       final String workerDescription,
+                                       final String workerCancelledDescription){
+
         worker.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(final PropertyChangeEvent event) {
@@ -256,7 +266,7 @@ public class AirportInformation extends JFrame{
                                     setCurrentWorker(null);
                                 } catch (ExecutionException e1) {
                                     outputConsole.append(System.lineSeparator());
-                                    outputConsole.append("The query produced no results");
+                                    outputConsole.append(resBundle.getString("queryProducedNoResults"));
                                     outputConsole.append(System.lineSeparator());
                                     setCurrentWorker(null);
                                 }catch (Exception e1) {
