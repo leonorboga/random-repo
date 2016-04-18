@@ -38,7 +38,7 @@ object Airport {
     })
   }
 
-  def getCountriesOrderedByNumberOfAirports: List[(String, Long)] = {
+  def getCountriesByNumberOfAirports: List[(String, Long)] = {
 
     val airports = getAirportsFile
 

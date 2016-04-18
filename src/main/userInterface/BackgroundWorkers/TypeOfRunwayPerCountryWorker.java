@@ -12,7 +12,7 @@ public class TypeOfRunwayPerCountryWorker extends SwingWorker<String, String> {
     }
     @Override
     protected String doInBackground() throws Exception {
-        return Report.getTypeOfRunwaysPerCountry();
+        return Report.getRunwaysPerCountry();
     }
 }
 

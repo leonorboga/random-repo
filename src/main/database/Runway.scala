@@ -52,7 +52,7 @@ object Runway {
     }).groupByKey().map(x => (x._1, x._2.toList))
   }
 
-  def getListOfOrderedLatitudes: List[(String, Long)] = {
+  def getListOfLatitudes: List[(String, Long)] = {
     val runways = getRunwaysFile
 
     runways.mapPartitions(lines => {
@@ -61,7 +61,7 @@ object Runway {
         val columns = parser.parseLine(line)
          columns(latitudeColumn)
       })
-    }).countByValue().toList.sortBy(-_._2)
+    }).countByValue().toList
   }
 
 
