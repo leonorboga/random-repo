@@ -29,7 +29,7 @@ object Query {
 
   val newLine = sys.props("line.separator")
 
-  def queryFromCountryName(countryName: String): String ={
+  def queryAirportsAndRunwaysForCountryName(countryName: String): String ={
 
     val queryOutput:StringBuilder = new StringBuilder()
     val countryCodesAndNames = Country.getCountryCodeFromName(countryName)
@@ -42,11 +42,11 @@ object Query {
     queryOutput.toString()
   }
 
-  def queryFromCountryCode(countryCode: String): String = {
+  def queryAirportsAndRunwaysForCountryCode(countryCode: String): String = {
 
     val queryOutput:StringBuilder = new StringBuilder()
 
-    if(Country.checkIfCountryCodeExists(countryCode)) {
+    if(Country.doesCountryCodeExists(countryCode)) {
 
       val countryName = Country.getCountryNameFromCode(countryCode)
       queryOutput.append(getListOfAirports(countryCode, countryName))

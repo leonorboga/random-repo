@@ -42,6 +42,7 @@ public class AirportInformation extends JFrame{
 
     private final int minimumCountryNameCharacters = 3;
     private final int minimumCountryCodeCharacters = 2;
+
     private SwingWorker<String, String> currentWorker;
 
     public AirportInformation() {
@@ -192,9 +193,75 @@ public class AirportInformation extends JFrame{
         currentWorker = worker;
     }
 
+    private void setConfiguration() {
+        final int width = 700;
+        final int height = 600;
+        final int sideBorder_10 = 10;
+        final int sideBorder_5 = 5;
+
+        setContentPane(rootPanel);
+        pack();
+        rootPanel.setBorder(new EmptyBorder(sideBorder_10, sideBorder_10, sideBorder_5, sideBorder_10));
+        setSize(width,height);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+
+    private void createUIComponents() {
+        int min = 1;
+        int max = 100;
+        int step = 1;
+        int initValue = 10;
+        SpinnerModel model1 = new SpinnerNumberModel(initValue, min, max, step);
+        SpinnerModel model2 = new SpinnerNumberModel(initValue, min, max, step);
+        spinner1 = new JSpinner(model1);
+        spinner2 = new JSpinner(model2);
+    }
+
+    private void runWorkerAndGetResult(final SwingWorker<String, String> worker,
+                                       final String workerDescription,
+                                       final String workerCancelledDescription){
+
+        worker.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(final PropertyChangeEvent event) {
+                switch (event.getPropertyName()) {
+                    case "state":
+                        switch ((StateValue) event.getNewValue()) {
+                            case DONE:
+                                try {
+                                    printWorkerResults(workerDescription, worker.get());
+
+                                } catch (CancellationException e1) {
+                                    outputConsole.append(workerCancelledDescription);
+                                    outputConsole.append(System.lineSeparator());
+                                } catch (ExecutionException e1) {
+                                    outputConsole.append(System.lineSeparator());
+                                    outputConsole.append(resBundle.getString("queryProducedNoResults"));
+                                    outputConsole.append(System.lineSeparator());
+                                }catch (Exception e1) {
+                                    outputConsole.append(e1.getMessage());
+                                }
+                                finally {
+                                    setCurrentWorker(null);
+                                }
+                                break;
+                        }
+                    break;
+                }
+            }
+        });
+
+        try {
+            startWorker(worker);
+        } catch (Exception e1) {
+            outputConsole.append(e1.getMessage());
+        }
+    }
+
     private boolean isInputForQueryByCountryNameValid()
     {
-        if(!isCountryNameFilledIn() || !hasCountryNameMinimunOfCharacters())
+        if(!isCountryNameFilledIn() || !hasCountryNameMinimumOfCharacters())
         {
             outputConsole.append(String.format(resBundle.getString("CountryNameMinCharacters"), minimumCountryNameCharacters));
             outputConsole.append(System.lineSeparator());
@@ -226,7 +293,7 @@ public class AirportInformation extends JFrame{
         return ! countryCode.getText().trim().isEmpty();
     }
 
-    private boolean hasCountryNameMinimunOfCharacters()
+    private boolean hasCountryNameMinimumOfCharacters()
     {
         return countryName.getText().trim().length() >= minimumCountryNameCharacters;
     }
@@ -234,67 +301,6 @@ public class AirportInformation extends JFrame{
     private boolean hasCountryCodeExactNumOfCharacters()
     {
         return countryCode.getText().trim().length() == minimumCountryCodeCharacters;
-    }
-
-    private void setConfiguration() {
-        setContentPane(rootPanel);
-        pack();
-        rootPanel.setBorder(new EmptyBorder(10, 10, 5, 10));
-        setSize(700,600);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    }
-
-    private void createUIComponents() {
-        int min = 1;
-        int max = 100;
-        int step = 1;
-        int initValue = 10;
-        SpinnerModel model1 = new SpinnerNumberModel(initValue, min, max, step);
-        SpinnerModel model2 = new SpinnerNumberModel(initValue, min, max, step);
-        spinner1 = new JSpinner(model1);
-        spinner2 = new JSpinner(model2);
-    }
-
-    private void runWorkerAndGetResult(final SwingWorker<String, String> worker,
-                                       final String workerDescription,
-                                       final String workerCancelledDescription){
-
-        worker.addPropertyChangeListener(new PropertyChangeListener() {
-
-            public void propertyChange(final PropertyChangeEvent event) {
-                switch (event.getPropertyName()) {
-                    case "state":
-                        switch ((StateValue) event.getNewValue()) {
-                            case DONE:
-                                try {
-                                    printWorkerResults(workerDescription, worker.get());
-                                    setCurrentWorker(null);
-                                } catch (CancellationException e1) {
-                                    outputConsole.append(workerCancelledDescription);
-                                    outputConsole.append(System.lineSeparator());
-                                    setCurrentWorker(null);
-                                } catch (ExecutionException e1) {
-                                    outputConsole.append(System.lineSeparator());
-                                    outputConsole.append(resBundle.getString("queryProducedNoResults"));
-                                    outputConsole.append(System.lineSeparator());
-                                    setCurrentWorker(null);
-                                }catch (Exception e1) {
-                                    outputConsole.append(e1.getMessage());
-                                    setCurrentWorker(null);
-                                }
-                                break;
-                        }
-                        break;
-                }
-            }
-        });
-
-        try {
-            startWorker(worker);
-        } catch (Exception e1) {
-            outputConsole.append(e1.getMessage());
-        }
     }
 }
 

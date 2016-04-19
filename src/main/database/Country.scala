@@ -7,7 +7,7 @@ import org.apache.spark.rdd.RDD
 import Utilities.readFile
 
 /**
-  * Query the Countries' main.database
+  * Query the Countries' database
   */
 object Country {
 
@@ -32,7 +32,7 @@ object Country {
     })
   }
 
-  def checkIfCountryCodeExists(countryCode: String): Boolean = {
+  def doesCountryCodeExists(countryCode: String): Boolean = {
 
     val countries = getCountriesFile
 

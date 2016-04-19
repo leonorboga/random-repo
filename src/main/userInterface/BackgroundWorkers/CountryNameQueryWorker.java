@@ -16,6 +16,6 @@ public class CountryNameQueryWorker extends SwingWorker<String, String> {
 
     @Override
     protected String doInBackground() throws Exception {
-        return Query.queryFromCountryName(countryName);
+        return Query.queryAirportsAndRunwaysForCountryName(countryName);
     }
 }

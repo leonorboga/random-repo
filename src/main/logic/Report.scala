@@ -19,10 +19,12 @@ object Report {
     * (indicated in "le_ident" column)
     */
 
-  def airportsPerCountryWithCount(numberOfResults:Int): String ={
+  def getCountryWithOrderedNumberOfAirportsWithCount(numberOfResults:Int): String ={
     val reportOutput:StringBuilder = new StringBuilder()
 
-    val countriesMoreAirports = Airport.getCountriesByNumberOfAirports.sortBy(-_._2).take(numberOfResults)
+    val airportsCountries = Airport.getAirportsCountries
+
+    val countriesMoreAirports = airportsCountries.sortBy(-_._2).take(numberOfResults)
     val countriesWithNameMoreAirports = countriesMoreAirports.map(x => Tuple2(Country.getCountryNameFromCode(x._1), x._2))
 
     countriesWithNameMoreAirports.foreach(line => {
@@ -32,7 +34,7 @@ object Report {
     })
 
     reportOutput.append(newLine)
-    val countriesLessAirports = Airport.getCountriesByNumberOfAirports.sortBy(_._2).take(numberOfResults)
+    val countriesLessAirports = airportsCountries.sortBy(_._2).take(numberOfResults)
     val countriesWithNameLessAirports = countriesLessAirports.map(x => Tuple2(Country.getCountryNameFromCode(x._1), x._2))
 
     countriesWithNameLessAirports.foreach(line => {

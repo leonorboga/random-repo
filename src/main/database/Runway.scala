@@ -7,7 +7,7 @@ import org.apache.spark.rdd.RDD
 import Utilities.readFile
 
 /**
-  * Query the Runways' main.database
+  * Query the Runways' database
   */
 object Runway {
 

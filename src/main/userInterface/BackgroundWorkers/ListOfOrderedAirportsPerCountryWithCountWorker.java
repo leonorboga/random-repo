@@ -18,6 +18,6 @@ public class ListOfOrderedAirportsPerCountryWithCountWorker extends SwingWorker<
 
     @Override
     protected String doInBackground() throws Exception {
-        return Report.airportsPerCountryWithCount(numberOfResults);
+        return Report.getCountryWithOrderedNumberOfAirportsWithCount(numberOfResults);
     }
 }

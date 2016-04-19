@@ -7,7 +7,7 @@ import org.apache.spark.rdd.RDD
 import Utilities.readFile
 
 /**
-  * Query the Airports' main.database
+  * Query the Airports' database
   */
 
 object Airport {
@@ -38,7 +38,7 @@ object Airport {
     })
   }
 
-  def getCountriesByNumberOfAirports: List[(String, Long)] = {
+  def getAirportsCountries: List[(String,Long)] = {
 
     val airports = getAirportsFile
 

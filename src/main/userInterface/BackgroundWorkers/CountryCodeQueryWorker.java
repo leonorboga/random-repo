@@ -16,6 +16,6 @@ public class CountryCodeQueryWorker extends SwingWorker<String, String> {
 
     @Override
     protected String doInBackground() throws Exception {
-        return Query.queryFromCountryCode(countryCode.toUpperCase());
+        return Query.queryAirportsAndRunwaysForCountryCode(countryCode.toUpperCase());
     }
 }
